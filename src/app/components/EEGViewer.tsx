@@ -20,10 +20,24 @@ const EEGViewer: React.FC = () => {
 
     svg.on('mouseover', function() {
       svg.dispatch('start');
+      
+      // Add keydown event listener here
+      d3.select(window).on('keydown', function(event) {
+        if (event.key === 'ArrowRight') {
+          // Scroll or pan to the right
+          const transform = d3.zoomTransform(svg.node() as d3.ZoomableElement);
+          svg.call(zoom.translateBy, -100, 0); // Adjust 20 to desired panning amount
+        } else if (event.key === 'ArrowLeft') {
+          // Scroll or pan to the left
+          svg.call(zoom.translateBy, 100, 0); // Adjust 20 to desired panning amount
+        }
+      });
     });
-
+  
     svg.on('mouseout', function() {
-        svg.dispatch('end');
+      svg.dispatch('end');
+      // Remove keydown event listener here
+      d3.select(window).on('keydown', null);
     });
 
     const container = svg.append('g');
