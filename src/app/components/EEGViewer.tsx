@@ -51,7 +51,7 @@ const EEGViewer: React.FC = () => {
       container.append('path')
         .datum(channel.values)
         .attr('fill', 'none')
-        .attr('stroke', '#16b8f3')
+        .attr('stroke', '#00FFFF')
         .attr('stroke-width', 1.5)
         .attr('d', lineGenerator);
     });
