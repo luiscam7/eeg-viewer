@@ -33,7 +33,7 @@ const EEGViewer: React.FC = () => {
       .translateExtent([[0, 0], [width * 5, height]])  // extent to which we can pan
       .on('zoom', zoomed);
 
-    svg.call(zoom);
+    svg.call(zoom as any);
 
     function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
       // Restricting vertical movement using transform
