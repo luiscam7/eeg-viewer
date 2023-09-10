@@ -6,6 +6,10 @@
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
+    --path-stroke-rgb: 34, 28, 28;  /* Added this line for path color */
+    --channel-label-rgb: 0, 0, 0;  /* Default channel label color */
+
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +17,10 @@
         --foreground-rgb: 255, 255, 255;
         --background-start-rgb: 45, 45, 45;
         --background-end-rgb: 28, 28, 28;
+        --path-stroke-rgb: 150,150,150; /* Light grey color in dark mode */
+        --channel-label-rgb: 150, 150, 150; /* Medium grey for channel label in dark mode */
+
+
     }
 }
 
@@ -33,10 +41,10 @@ body {
     justify-content: center;
     align-items: center;
     background: var(--background-start-rgb);
-    border-radius: 10px;
+    border-radius: 7px;
     backdrop-filter: blur(10px);
-    box-shadow: 8px 8px 16px rgba(163,177,198,0.3), 
-            -8px -8px 16px rgba(255,255,255, 0.3);
+    box-shadow: 4px 4px 8px rgba(163,177,198,0.2), 
+                -4px -4px 8px rgba(255, 255, 255, 0.05);
 
     padding: 15px;
     margin: 50px 0; /* Adjusted to add margin only top and bottom */
@@ -48,12 +56,22 @@ body {
 
 svg {
     background: var(--background-end-rgb);
-    border-radius: 10px;
-    box-shadow:
+    border-radius: 7px;
+    box-shadow: 4px 4px 8px rgba(163,177,198,0.15), 
+                -4px -4px 8px rgba(255, 255, 255, 0.04);
 
 
 }
 
 path {
-    stroke: rgb(34, 28, 28);
+    stroke: rgb(var(--path-stroke-rgb)); /* Using the variable for path color */
 }
+
+text {
+    fill: rgb(var(--channel-label-rgb)); /* Using the variable for channel label color */
+}
+
+
+
+
+
