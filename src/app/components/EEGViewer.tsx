@@ -29,7 +29,7 @@ const EEGViewer: React.FC = () => {
         .on('zoom', zoomed);
 
     // Applying the zoom to the SVG
-    svg.call(zoom);
+    svg.call(zoom as any);
 
     function zoomed(event) {
         container.attr('transform', event.transform);
@@ -77,7 +77,7 @@ const EEGViewer: React.FC = () => {
 
     drawEEGData();
 
-  }, [mockEEGData]);
+  }, [mockEEGData, channelLabels]);
 
   return (
     <div className="p-4 bg-base-100 shadow rounded-lg">
