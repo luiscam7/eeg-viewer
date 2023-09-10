@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 45, 45, 45;
+        --background-end-rgb: 28, 28, 28;
+    }
+}
+
+body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+.eegviewer-container {
+    /* width: 1080px; Remove this line */
+    height: 830px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--background-start-rgb);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 8px 8px 16px rgba(163,177,198,0.3), 
+            -8px -8px 16px rgba(255,255,255, 0.3);
+
+    padding: 15px;
+    margin: 50px 0; /* Adjusted to add margin only top and bottom */
+    overflow-x: auto;
+    max-width: 100%; /* Ensuring it doesn't overflow its parent */
+    max-height: 100%;
+}
+
+
+svg {
+    background: var(--background-end-rgb);
+    border-radius: 10px;
+    box-shadow:
+
+
+}
+
+path {
+    stroke: rgb(34, 28, 28);
+}
