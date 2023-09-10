@@ -5,7 +5,31 @@
 }
 
 .toolbar-container {
-    transition: box-shadow 0.3s ease-in-out;  /* Transition for the glow effect */
+    transition: box-shadow 0.3s ease-in-out;
+    box-shadow: 4px 4px 8px rgba(163,177,198,0.15), 
+                -4px -4px 8px rgba(255, 255, 255, 0.04);
+    padding: 0.8rem; /* default padding for mobile */
+
+    /* Smartphone adjustments */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Tablet screen sizes */
+@media (min-width: 640px) {
+    .toolbar-container {
+        padding: 1.2rem;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+/* Desktop screen sizes */
+@media (min-width: 1024px) {
+    .toolbar-container {
+        padding: 1.5rem;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,7 +40,8 @@
     }
 
     .toolbar-container {
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.057); /* Added subtle glow effect for the entire toolbar */
+        box-shadow: 4px 4px 8px rgba(45, 45, 45, 0.15), 
+                    -4px -4px 8px rgba(28, 28, 28, 0.04);
     }
 }
 

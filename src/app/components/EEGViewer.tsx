@@ -48,7 +48,7 @@ const EEGViewer: React.FC = () => {
         .append('path')
         .datum(channel.values)
         .attr('fill', 'none')
-        .attr('stroke', 'steelblue')
+        .attr('stroke', '#3B82F6')  // Color for blue-500 from daisyUI
         .attr('stroke-width', 1.5)
         .attr('d', lineGenerator);
 
@@ -58,6 +58,7 @@ const EEGViewer: React.FC = () => {
         .attr('y', y + channelHeight / 2)
         .attr('dy', '.35em')
         .attr('text-anchor', 'end')
+        .attr('class', 'font-sans text-blue-500')
         .text(channelLabels[i]);
     });
   }
@@ -65,7 +66,11 @@ const EEGViewer: React.FC = () => {
 
   }, [mockEEGData]);
 
-  return <svg ref={svgRef} width="1050" height="800"></svg>;
+  return (
+    <div className="p-4 bg-base-100 shadow rounded-lg">
+      <svg ref={svgRef} width="1050" height="800"></svg>
+    </div>
+  );
 };
 
 export default EEGViewer;
