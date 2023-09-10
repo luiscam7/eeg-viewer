@@ -31,9 +31,11 @@ const EEGViewer: React.FC = () => {
     // Applying the zoom to the SVG
     svg.call(zoom as any);
 
-    function zoomed(event) {
-        container.attr('transform', event.transform);
-    }
+    function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
+      container.attr('transform', event.transform.toString());
+  }
+  
+  
 
     const container = svg.append('g');
 
