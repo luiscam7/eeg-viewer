@@ -1,11 +1,13 @@
 import React from 'react';
 import Image from 'next/image';
 import '../styles/Toolbar.css'; 
+import { StaticImageData } from 'next/image';
+
 
 interface BrainWaveToolbarProps {
   userName: string;
-  userImage: string;
-  logoPath: string;
+  userImage: StaticImageData | string;
+  logoPath: StaticImageData | string;
 }
 
 const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage, logoPath }) => {
