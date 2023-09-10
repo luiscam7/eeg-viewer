@@ -1,16 +1,18 @@
 // components/EEGViewer.tsx
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import '../styles/EEGViewer.css';
 
+const channelLabels = ["Fz", "Cz", "Pz", "Fp1", "Fp2", "F7", "F3", "F4", "F8", "T7", "C3", "C4", "T8", "P7", "P3", "P4", "P8", "O1", "O2"];
+
 const EEGViewer: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [startPoint, setStartPoint] = useState(0);
 
   // Mock EEG data
   const channels = 19;
-  const channelLabels = ["Fz", "Cz", "Pz", "Fp1", "Fp2", "F7", "F3", "F4", "F8", "T7", "C3", "C4", "T8", "P7", "P3", "P4", "P8", "O1", "O2"];
   const mockEEGData = Array.from({ length: channels }, () => ({
     values: Array.from({ length: 5000 }, () => Math.random() * 10 - 5),
   }));
@@ -22,68 +24,46 @@ const EEGViewer: React.FC = () => {
     const margin = { top: 5, right: 0, bottom: 5, left: 50 };
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
-    // Zoom function
-    const zoom = d3.zoom()
-        .scaleExtent([1, 10])
-        .translateExtent([[0, 0], [width, height]])
-        .on('zoom', zoomed);
-
-    // Applying the zoom to the SVG
-    svg.call(zoom as any);
-
-    function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
-      container.attr('transform', event.transform.toString());
-  }
-  
-  
-
-    const container = svg.append('g');
+    const container = svg.select('.eeg-container');
+    if (container.empty()) {
+      svg.append('g').attr('class', 'eeg-container');
+    }
 
     function drawEEGData() {
-      // Remove previous paths and text
-      container.selectAll("*").remove();
-
       mockEEGData.forEach((channel, i) => {
         const y = (channelHeight + margin.top) * i + margin.top;
+        const yScale = d3.scaleLinear().domain([-5, 5]).range([y + channelHeight, y]);
+        const xScale = d3.scaleLinear().domain([startPoint, startPoint + 1000]).range([margin.left, width - margin.right]);
+        
+        const lineGenerator = d3.line<number>().x((d, index) => xScale(index + startPoint)).y(d => yScale(d));
 
-        const xScale = d3.scaleLinear().domain([0, 1000]).range([margin.left, width - margin.right]);
-        const yScale = d3
-          .scaleLinear()
-          .domain([-5, 5])
-          .range([y + channelHeight, y]);
-
-        const lineGenerator = d3
-          .line<number>()
-          .x((d, index) => xScale(index))
-          .y(d => yScale(d));
-      
         // Add EEG path
-        container
-          .append('path')
+        svg.select(`.path-${i}`).remove();
+        svg.append('path')
+          .attr('class', `path-${i}`)
           .datum(channel.values)
           .attr('fill', 'none')
-          .attr('stroke', '#3B82F6')  // Color for blue-500 from daisyUI
+          .attr('stroke', '#3B82F6')
           .attr('stroke-width', 1.5)
           .attr('d', lineGenerator);
-
-        // Add channel label
-        container.append('text')
-          .attr('x', margin.left - 10) 
-          .attr('y', y + channelHeight / 2)
-          .attr('dy', '.35em')
-          .attr('text-anchor', 'end')
-          .attr('class', 'font-sans text-blue-500')
-          .text(channelLabels[i]);
       });
     }
 
     drawEEGData();
-
-  }, [mockEEGData, channelLabels]);
+  }, [startPoint, mockEEGData]);
 
   return (
     <div className="p-4 bg-base-100 shadow rounded-lg">
       <svg ref={svgRef} width="1050" height="800"></svg>
+      <div className="mt-4">
+        <input 
+          type="range" 
+          min="0" 
+          max="4000" 
+          value={startPoint} 
+          onChange={(e) => setStartPoint(+e.target.value)} 
+        />
+      </div>
     </div>
   );
 };
