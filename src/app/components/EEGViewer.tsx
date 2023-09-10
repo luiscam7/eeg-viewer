@@ -1,69 +1,71 @@
-// components/EEGViewer.tsx
 'use client';
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import '../styles/EEGViewer.css';
-
-const channelLabels = ["Fz", "Cz", "Pz", "Fp1", "Fp2", "F7", "F3", "F4", "F8", "T7", "C3", "C4", "T8", "P7", "P3", "P4", "P8", "O1", "O2"];
 
 const EEGViewer: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [startPoint, setStartPoint] = useState(0);
 
-  // Mock EEG data
   const channels = 19;
+  const channelLabels = ["Fz", "Cz", "Pz", "Fp1", "Fp2", "F7", "F3", "F4", "F8", "T7", "C3", "C4", "T8", "P7", "P3", "P4", "P8", "O1", "O2"];
   const mockEEGData = Array.from({ length: channels }, () => ({
     values: Array.from({ length: 5000 }, () => Math.random() * 10 - 5),
   }));
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
-    const width = +svg.attr('width'); 
-    const height = +svg.attr('height'); 
-    const margin = { top: 5, right: 0, bottom: 5, left: 50 };
+    const width = +svg.attr('width');
+    const height = +svg.attr('height');
+    const margin = { top: 5, right: 0, bottom: 5, left: 100};
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
-    const container = svg.select('.eeg-container');
-    if (container.empty()) {
-      svg.append('g').attr('class', 'eeg-container');
+    svg.on('mouseover', function() {
+      svg.dispatch('start');
+    });
+
+    svg.on('mouseout', function() {
+        svg.dispatch('end');
+    });
+
+    const container = svg.append('g');
+
+    const zoom = d3.zoom()
+      .scaleExtent([1, 1])  // prevents zooming in or out
+      .translateExtent([[0, 0], [width * 5, height]])  // extent to which we can pan
+      .on('zoom', zoomed);
+
+    svg.call(zoom);
+
+    function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
+      // Restricting vertical movement using transform
+      container.attr('transform', `translate(${event.transform.x},0)`);
     }
 
-    function drawEEGData() {
-      mockEEGData.forEach((channel, i) => {
-        const y = (channelHeight + margin.top) * i + margin.top;
-        const yScale = d3.scaleLinear().domain([-5, 5]).range([y + channelHeight, y]);
-        const xScale = d3.scaleLinear().domain([startPoint, startPoint + 1000]).range([margin.left, width - margin.right]);
-        
-        const lineGenerator = d3.line<number>().x((d, index) => xScale(index + startPoint)).y(d => yScale(d));
+    mockEEGData.forEach((channel, i) => {
+      const y = (channelHeight + margin.top) * i + margin.top;
 
-        // Add EEG path
-        svg.select(`.path-${i}`).remove();
-        svg.append('path')
-          .attr('class', `path-${i}`)
-          .datum(channel.values)
-          .attr('fill', 'none')
-          .attr('stroke', '#3B82F6')
-          .attr('stroke-width', 1.5)
-          .attr('d', lineGenerator);
-      });
-    }
+      const xScale = d3.scaleLinear().domain([0, 5000]).range([margin.left, width * 5 - margin.right]);
+      const yScale = d3.scaleLinear().domain([-5, 5]).range([y + channelHeight, y]);
 
-    drawEEGData();
-  }, [startPoint, mockEEGData]);
+      const lineGenerator = d3.line<number>().x((d, index) => xScale(index)).y(d => yScale(d));
+      
+      container.append('path')
+        .datum(channel.values)
+        .attr('fill', 'none')
+        .attr('stroke', '#16b8f3')
+        .attr('stroke-width', 1.5)
+        .attr('d', lineGenerator);
+    });
+
+  }, []);
 
   return (
-    <div className="p-4 bg-base-100 shadow rounded-lg">
-      <svg ref={svgRef} width="1050" height="800"></svg>
-      <div className="mt-4">
-        <input 
-          type="range" 
-          min="0" 
-          max="4000" 
-          value={startPoint} 
-          onChange={(e) => setStartPoint(+e.target.value)} 
-        />
+    <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '800px', padding: '5px 0', marginRight: '5px' }}>
+        {channelLabels.map(label => (
+          <div key={label}>{label}</div>
+        ))}
       </div>
+      <svg ref={svgRef} width="1050" height="800"></svg>
     </div>
   );
 };

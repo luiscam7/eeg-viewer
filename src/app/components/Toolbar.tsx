@@ -15,7 +15,7 @@ const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage
     <div className={`toolbar-container px-4 shadow-lg dark:shadow-none dark:ring-1 dark:ring-gray-500`}>
       {/* Logo Section */}
       {/* Logo and title */}
-      <div className="relative w-8 h-8 shadow-md rounded-md">
+      <div className="relative w-8 h-8 shadow-md rounded-full">
         <Image src={logoPath} alt="BrainWave logo" layout="fill" objectFit="cover" className="rounded-full" />
       </div>
       <div className="flex-1">
