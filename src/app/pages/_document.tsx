@@ -6,7 +6,7 @@ class MyDocument extends Document {
             <Html>
                 <Head>
                     <link rel="manifest" href="public/manifest.json" />
-                    <link rel="apple-touch-icon" href="./images/logo/wave.png" />
+                    <link rel="apple-touch-icon" href="src/app/images/logo/wave.png" />
                     <meta name="theme-color" content="#042940" />
                     <meta
                         name='viewport'
