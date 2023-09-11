@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 const channels = 19;
@@ -11,30 +11,6 @@ const mockEEGData = Array.from({ length: channels }, () => ({
 const EEGViewer: React.FC = () => {
 
   const svgRef = useRef<SVGSVGElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const [svgSize, setSvgSize] = useState({ width: 1050, height: 800 });
-
-  useEffect(() => {
-    // This function sets the SVG's width and height to its container's dimensions.
-    const updateSvgSize = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setSvgSize({ width, height });
-      }
-    };
-
-    // Initialize the size.
-    updateSvgSize();
-
-    // Attach the resize listener to the window.
-    window.addEventListener('resize', updateSvgSize);
-
-    // Cleanup listener on component unmount.
-    return () => {
-      window.removeEventListener('resize', updateSvgSize);
-    };
-  }, []);
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
@@ -180,16 +156,16 @@ const EEGViewer: React.FC = () => {
       d3.select(window).on('keydown', null);
       svg.on('wheel', null);
     };
-  }, [svgSize]);
+  }, []);
 
   return (
-    <div ref={containerRef} style={{ display: 'flex', width: '100%', height: '100%' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '5px 0', marginRight: '5px' }}>
+    <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '800px', padding: '5px 0', marginRight: '5px' }}>
         {channelLabels.map(label => (
           <div key={label}>{label}</div>
         ))}
       </div>
-      <svg ref={svgRef} width={svgSize.width} height={svgSize.height} style={{ flex: 1 }}></svg>
+      <svg ref={svgRef} width="1050" height="800"></svg>
     </div>
   );
 };
