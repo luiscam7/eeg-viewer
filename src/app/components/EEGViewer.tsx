@@ -20,37 +20,67 @@ const EEGViewer: React.FC = () => {
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
     let lastTime = Date.now();
-    let velocity = 100;
-    const friction = 0.2; // adjust as needed for more or less "slide"
-
+    let velocity = 20;
+    const friction = 0.01; 
+    let isDecelerating = false;
+    
     svg.on('wheel', function(event) {
       const currentTime = Date.now();
       const elapsed = currentTime - lastTime;
-      velocity = event.deltaY / elapsed;
-
-      // Apply the initial move
+      velocity = event.deltaX / elapsed;
+    
       const initialPan = event.deltaY;
-      let remainingPan = velocity * 200; // This determines how far the momentum will carry the pan
-
+      let remainingPan = velocity * 100;
+    
       const move = function(panAmount: number) {
-        const newTransform = createZoomEvent(-panAmount, 0);
+        // Get the current transformation
+        const currentTransform = d3.zoomTransform(svg.node()!);
+        
+        // Calculate the proposed translation
+        let proposedTranslationX = currentTransform.x + panAmount;  // Add the panAmount
+        
+        // Define the boundary values
+        const minXTranslation = -width * 4;  // This is the maximum leftward pan
+        const maxXTranslation = 0;           // Initial position, you cannot pan rightward beyond this
+        
+        // Check and adjust for boundaries
+        if (proposedTranslationX < minXTranslation) {
+          proposedTranslationX = minXTranslation;
+        } else if (proposedTranslationX > maxXTranslation) {
+          proposedTranslationX = maxXTranslation;
+        }
+      
+        const newTransform = d3.zoomIdentity.translate(proposedTranslationX, currentTransform.y);
         svg.call(zoom.transform as any, newTransform);
       };
       
-
-      move(initialPan);
+      
+    
+      if (isDecelerating) {
+        // Adjust logic if you want a new scroll to affect current deceleration
+        // For example, you could add the new pan to the remainingPan
+        remainingPan += initialPan;
+      } else {
+        move(initialPan);
+      }
+    
       const decelerate = function() {
-        if (Math.abs(remainingPan) < 0.1) return; // Stop the animation if remaining pan is negligible
-
+        if (Math.abs(remainingPan) < 0.1) {
+          isDecelerating = false;
+          return; 
+        }
+    
         move(remainingPan);
-        remainingPan *= friction; // Slowly reduce the remaining pan
-
-        // Continue the animation
+        remainingPan *= friction;
+    
         requestAnimationFrame(decelerate);
       };
-
-      requestAnimationFrame(decelerate);
-
+    
+      if (!isDecelerating) {
+        isDecelerating = true;
+        requestAnimationFrame(decelerate);
+      }
+    
       lastTime = currentTime;
     });
 
@@ -65,19 +95,13 @@ const EEGViewer: React.FC = () => {
 
       d3.select(window).on('keydown', function(event) {
         if (event.key === 'ArrowRight') {
-          const newTransform = createZoomEvent(-120, 0);
+          const newTransform = createZoomEvent(-330, 0);
           svg.transition().duration(250).call(zoom.transform as any, newTransform);
         } else if (event.key === 'ArrowLeft') {
-          const newTransform = createZoomEvent(120, 0);
+          const newTransform = createZoomEvent(330, 0);
           svg.transition().duration(250).call(zoom.transform as any, newTransform);
         }
       });
-    });
-
-    svg.on('wheel', function(event) {
-        const amountToPan = event.deltaY * 3;
-        const newTransform = createZoomEvent(-amountToPan, 0);
-        svg.transition().duration(250).call(zoom.transform as any, newTransform);
     });
 
     svg.on('mouseout', function() {
