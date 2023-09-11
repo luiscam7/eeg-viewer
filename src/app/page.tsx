@@ -1,5 +1,5 @@
 import EEGViewer from './components/EEGViewer';
-import BrainWaveToolbar from './components/Toolbar';
+import CerebroToolbar from './components/Toolbar';
 
 import userImage from './images/profile/deadmau5.jpg';
 import logoImage from './images/logo/wave.png'
@@ -8,7 +8,7 @@ import logoImage from './images/logo/wave.png'
 function App() {
     return (
         <div className="bg-base-100"> {/* Set the overall background color */}
-            <BrainWaveToolbar
+            <CerebroToolbar
                 userName="Deadmau5"
                 userImage={userImage}
                 logoPath={logoImage}

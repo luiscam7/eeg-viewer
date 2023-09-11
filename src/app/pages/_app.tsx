@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta property="og:description" content="EEG data visualization application" />
         <meta property="og:site_name" content="Cerebro" />
         <meta property="og:url" content="https://eeg-viewer.vercel.app" />
-        <meta property="og:image" content="src/app/images/logo/Brainwave.png" />
+        <meta property="og:image" content="src/app/images/logo/Cerebro.png" />
       </Head>
       <Component {...pageProps} />
     </>

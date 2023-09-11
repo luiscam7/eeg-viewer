@@ -3,23 +3,22 @@ import Image from 'next/image';
 import '../styles/Toolbar.css'; 
 import { StaticImageData } from 'next/image';
 
-
-interface BrainWaveToolbarProps {
+interface CerebroToolbarProps {
   userName: string;
   userImage: StaticImageData | string;
   logoPath: StaticImageData | string;
 }
 
-const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage, logoPath }) => {
+const CerebroToolbar: React.FC<CerebroToolbarProps> = ({ userName, userImage, logoPath }) => {
   return (
-    <div className={`toolbar-container flex justify-between items-center px-4 shadow-lg dark:shadow-none dark:ring-1 dark:ring-gray-500 w-full`}>
+    <div className="toolbar-container w-full px-4 shadow-lg dark:ring-1 dark:ring-gray-500">
       
       {/* Logo and title */}
       <div className="flex items-center gap-2">
         <div className="relative w-8 h-8 shadow-md rounded-full">
-          <Image src={logoPath} alt="BrainWave logo" layout="fill" objectFit="cover" className="rounded-full" />
+          <Image src={logoPath} alt="Cerebro logo" layout="fill" objectFit="cover" className="rounded-full" />
         </div>
-        <a className="btn btn-ghost normal-case text-xl">BrainWave</a>
+        <a className="btn btn-ghost normal-case text-xl toolbar-button">Cerebro</a>
       </div>
 
       {/* Toolbar Items */}
@@ -27,7 +26,7 @@ const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage
         {['Import EEG', 'Analyze', 'Settings'].map(action => (
           <button 
             key={action}
-            className="btn btn-ghost normal-case text-xl"
+            className="btn btn-ghost normal-case text-xl toolbar-button"
           >
             {action}
           </button>
@@ -37,12 +36,12 @@ const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage
       {/* User Profile */}
       <div className="flex-none gap-2">
         <div className="dropdown dropdown-end">
-          <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+          <label tabIndex={0} className="btn btn-ghost btn-circle avatar toolbar-button">
             <div className="w-10 rounded-full">
               <Image src={userImage} alt="User Profile" layout="fill" objectFit="cover" className="rounded-full" />
             </div>
           </label>
-          <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+          <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-full w-52">
             <li><a>{userName}</a></li>
             {/* Add other user related links if needed */}
             <li><a>Logout</a></li>
@@ -54,6 +53,4 @@ const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage
   );
 };
 
-
-
-export default BrainWaveToolbar;
+export default CerebroToolbar;
