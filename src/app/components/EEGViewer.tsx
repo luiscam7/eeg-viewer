@@ -30,7 +30,7 @@ const EEGViewer: React.FC = () => {
 
       // Apply the initial move
       const initialPan = event.deltaY;
-      let remainingPan = velocity * 1000; // This determines how far the momentum will carry the pan
+      let remainingPan = velocity * 200; // This determines how far the momentum will carry the pan
 
       const move = function(panAmount: number) {
         const newTransform = createZoomEvent(-panAmount, 0);

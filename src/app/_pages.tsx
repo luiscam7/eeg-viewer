@@ -30,7 +30,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" type="image/png" sizes="16x16" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5" />
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="public/favicon.ico"
+ />
 
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Cerebro" />

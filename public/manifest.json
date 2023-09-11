@@ -1,19 +1,19 @@
 {
-    "name": "BrainWaves",
-    "short_name": "Wave",
+    "name": "Cerebro",
+    "short_name": "Cerebro",
     "description": "A progressive web app to view EEG data",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#f3f4f6", // Grayish background commonly used in DaisyUI
-    "theme_color": "#1f2937", // Dark theme color commonly used in DaisyUI
+    "background_color": "#f3f4f6",
+    "theme_color": "#1f2937",
     "icons": [
         {
-            "src": "/wave.png",
+            "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/wave.png",
+            "src": "/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
