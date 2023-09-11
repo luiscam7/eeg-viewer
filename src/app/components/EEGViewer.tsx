@@ -19,10 +19,34 @@ const EEGViewer: React.FC = () => {
     const margin = { top: 5, right: 0, bottom: 5, left: 100 };
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
+    
+    let lastTouchX = 0; // Store the last touch position
     let lastTime = Date.now();
     let velocity = 100;
     const friction = 0.001; 
     let isDecelerating = false;
+
+    const move = function(panAmount: number) {
+      // Get the current transformation
+      const currentTransform = d3.zoomTransform(svg.node()!);
+      
+      // Calculate the proposed translation
+      let proposedTranslationX = currentTransform.x + panAmount;  // Add the panAmount
+      
+      // Define the boundary values
+      const minXTranslation = -width * 4;  // This is the maximum leftward pan
+      const maxXTranslation = 0;           // Initial position, you cannot pan rightward beyond this
+      
+      // Check and adjust for boundaries
+      if (proposedTranslationX < minXTranslation) {
+        proposedTranslationX = minXTranslation;
+      } else if (proposedTranslationX > maxXTranslation) {
+        proposedTranslationX = maxXTranslation;
+      }
+    
+      const newTransform = d3.zoomIdentity.translate(proposedTranslationX, currentTransform.y);
+      svg.call(zoom.transform as any, newTransform);
+    };
     
     svg.on('wheel', function(event) {
       const currentTime = Date.now();
@@ -31,30 +55,6 @@ const EEGViewer: React.FC = () => {
     
       const initialPan = event.deltaY;
       let remainingPan = velocity * 100;
-    
-      const move = function(panAmount: number) {
-        // Get the current transformation
-        const currentTransform = d3.zoomTransform(svg.node()!);
-        
-        // Calculate the proposed translation
-        let proposedTranslationX = currentTransform.x + panAmount;  // Add the panAmount
-        
-        // Define the boundary values
-        const minXTranslation = -width * 4;  // This is the maximum leftward pan
-        const maxXTranslation = 0;           // Initial position, you cannot pan rightward beyond this
-        
-        // Check and adjust for boundaries
-        if (proposedTranslationX < minXTranslation) {
-          proposedTranslationX = minXTranslation;
-        } else if (proposedTranslationX > maxXTranslation) {
-          proposedTranslationX = maxXTranslation;
-        }
-      
-        const newTransform = d3.zoomIdentity.translate(proposedTranslationX, currentTransform.y);
-        svg.call(zoom.transform as any, newTransform);
-      };
-      
-      
     
       if (isDecelerating) {
         // Adjust logic if you want a new scroll to affect current deceleration
@@ -122,6 +122,48 @@ const EEGViewer: React.FC = () => {
     svg.on('mouseout', function() {
       svg.dispatch('end');
       d3.select(window).on('keydown', null);
+    });
+
+    svg.on('touchmove', function(event) {
+      event.preventDefault(); // To prevent default browser scrolling
+      const touch = event.touches[0];
+      const currentTouchX = touch.clientX;
+  
+      // Calculate a "deltaX" similar to what you're doing for the wheel event
+      const deltaX = currentTouchX - lastTouchX;
+  
+      const currentTime = Date.now();
+      const elapsed = currentTime - lastTime;
+      velocity = deltaX / elapsed;
+  
+      const initialPan = deltaX;
+      let remainingPan = velocity * 100;
+  
+      if (isDecelerating) {
+        remainingPan += initialPan;
+      } else {
+        move(initialPan);
+      }
+  
+      const decelerate = function() {
+        if (Math.abs(remainingPan) < 0.1) {
+          isDecelerating = false;
+          return;
+        }
+  
+        move(remainingPan);
+        remainingPan *= friction;
+  
+        requestAnimationFrame(decelerate);
+      };
+  
+      if (!isDecelerating) {
+        isDecelerating = true;
+        requestAnimationFrame(decelerate);
+      }
+  
+      lastTime = currentTime;
+      lastTouchX = currentTouchX; // Update the last touch position
     });
 
     const container = svg.append('g');
