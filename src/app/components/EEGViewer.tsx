@@ -20,8 +20,8 @@ const EEGViewer: React.FC = () => {
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
     let lastTime = Date.now();
-    let velocity = 1000;
-    const friction = 0.01; 
+    let velocity = 100;
+    const friction = 0.001; 
     let isDecelerating = false;
     
     svg.on('wheel', function(event) {
@@ -94,13 +94,28 @@ const EEGViewer: React.FC = () => {
       if (!svgRef.current) return; 
 
       d3.select(window).on('keydown', function(event) {
+        const currentTransform = d3.zoomTransform(svg.node()!);
+        let proposedTranslationX;
+  
         if (event.key === 'ArrowRight') {
-          const newTransform = createZoomEvent(-330, 0);
-          svg.transition().duration(250).call(zoom.transform as any, newTransform);
+          proposedTranslationX = currentTransform.x - 330;
         } else if (event.key === 'ArrowLeft') {
-          const newTransform = createZoomEvent(330, 0);
-          svg.transition().duration(250).call(zoom.transform as any, newTransform);
+          proposedTranslationX = currentTransform.x + 330;
+        } else {
+          return;
         }
+  
+        const minXTranslation = -width * 4;
+        const maxXTranslation = 0;
+  
+        if (proposedTranslationX < minXTranslation) {
+          proposedTranslationX = minXTranslation;
+        } else if (proposedTranslationX > maxXTranslation) {
+          proposedTranslationX = maxXTranslation;
+        }
+  
+        const newTransform = d3.zoomIdentity.translate(proposedTranslationX, currentTransform.y);
+        svg.transition().duration(250).call(zoom.transform as any, newTransform);
       });
     });
 
