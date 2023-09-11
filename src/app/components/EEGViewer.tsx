@@ -20,7 +20,7 @@ const EEGViewer: React.FC = () => {
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
     let lastTime = Date.now();
-    let velocity = 0;
+    let velocity = 100;
     const friction = 0.2; // adjust as needed for more or less "slide"
 
     svg.on('wheel', function(event) {
