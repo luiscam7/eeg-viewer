@@ -24,7 +24,7 @@ const BrainWaveToolbar: React.FC<BrainWaveToolbarProps> = ({ userName, userImage
 
       {/* Toolbar Items */}
       <div className="flex-none gap-2">
-        {['Import EEG', 'Analyze', 'Save', 'Settings'].map(action => (
+        {['Import EEG', 'Analyze', 'Settings'].map(action => (
           <button 
             key={action}
             className="btn btn-ghost normal-case text-xl"
