@@ -41,7 +41,7 @@ const CerebroToolbar: React.FC<CerebroToolbarProps> = ({ userName, userImage, lo
               <Image src={userImage} alt="User Profile" layout="fill" objectFit="cover" className="rounded-full" />
             </div>
           </label>
-          <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-full w-52">
+          <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
             <li><a>{userName}</a></li>
             {/* Add other user related links if needed */}
             <li><a>Logout</a></li>
