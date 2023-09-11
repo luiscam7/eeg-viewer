@@ -19,24 +19,84 @@ const EEGViewer: React.FC = () => {
     const margin = { top: 5, right: 0, bottom: 5, left: 100 };
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
-    const container = svg.append('g');
-    
-    function dragstarted(event: d3.D3DragEvent<SVGSVGElement, unknown, unknown>) {
-      event.sourceEvent.stopPropagation();
-    }
+    let lastTime = Date.now();
+    let velocity = 0;
+    const friction = 0.2; // adjust as needed for more or less "slide"
 
-    function dragged(event: d3.D3DragEvent<SVGSVGElement, unknown, unknown>) {
-      const dx = event.dx;
+    svg.on('wheel', function(event) {
+      const currentTime = Date.now();
+      const elapsed = currentTime - lastTime;
+      velocity = event.deltaY / elapsed;
+
+      // Apply the initial move
+      const initialPan = event.deltaY;
+      let remainingPan = velocity * 1000; // This determines how far the momentum will carry the pan
+
+      const move = function(panAmount: number) {
+        const newTransform = createZoomEvent(-panAmount, 0);
+        svg.call(zoom.transform as any, newTransform);
+      };
+      
+
+      move(initialPan);
+      const decelerate = function() {
+        if (Math.abs(remainingPan) < 0.1) return; // Stop the animation if remaining pan is negligible
+
+        move(remainingPan);
+        remainingPan *= friction; // Slowly reduce the remaining pan
+
+        // Continue the animation
+        requestAnimationFrame(decelerate);
+      };
+
+      requestAnimationFrame(decelerate);
+
+      lastTime = currentTime;
+    });
+
+    function createZoomEvent(tx: number, ty: number) {
       const currentTransform = d3.zoomTransform(svg.node()!);
-      const newTransform = d3.zoomIdentity.translate(currentTransform.x + dx, 0);
-      container.attr('transform', `translate(${newTransform.x},0)`);
+      return d3.zoomIdentity.translate(currentTransform.x + tx, currentTransform.y + ty);
     }
 
-    const drag = d3.drag()
-      .on('start', dragstarted)
-      .on('drag', dragged);
+    svg.on('mouseover', function() {
+      svg.dispatch('start');
+      if (!svgRef.current) return; 
 
-    svg.call(drag);
+      d3.select(window).on('keydown', function(event) {
+        if (event.key === 'ArrowRight') {
+          const newTransform = createZoomEvent(-120, 0);
+          svg.transition().duration(250).call(zoom.transform as any, newTransform);
+        } else if (event.key === 'ArrowLeft') {
+          const newTransform = createZoomEvent(120, 0);
+          svg.transition().duration(250).call(zoom.transform as any, newTransform);
+        }
+      });
+    });
+
+    svg.on('wheel', function(event) {
+        const amountToPan = event.deltaY * 3;
+        const newTransform = createZoomEvent(-amountToPan, 0);
+        svg.transition().duration(250).call(zoom.transform as any, newTransform);
+    });
+
+    svg.on('mouseout', function() {
+      svg.dispatch('end');
+      d3.select(window).on('keydown', null);
+    });
+
+    const container = svg.append('g');
+
+    const zoom = d3.zoom()
+      .scaleExtent([1, 1])
+      .translateExtent([[0, 0], [width * 5, height]])
+      .on('zoom', zoomed);
+
+    svg.call(zoom as any);
+
+    function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
+      container.attr('transform', `translate(${event.transform.x},0)`);
+    }
 
     mockEEGData.forEach((channel, i) => {
       const y = (channelHeight + margin.top) * i + margin.top;
@@ -54,9 +114,9 @@ const EEGViewer: React.FC = () => {
 
     // Cleanup
     return () => {
-      svg.on('.drag', null);  // This will remove the drag behavior
+      d3.select(window).on('keydown', null);
+      svg.on('wheel', null);
     };
-
   }, []);
 
   return (
