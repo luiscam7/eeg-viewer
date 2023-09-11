@@ -20,7 +20,7 @@ const EEGViewer: React.FC = () => {
     const channelHeight = (height - margin.top - margin.bottom - (channels - 1) * margin.top) / channels;
 
     let lastTime = Date.now();
-    let velocity = 20;
+    let velocity = 1000;
     const friction = 0.01; 
     let isDecelerating = false;
     
