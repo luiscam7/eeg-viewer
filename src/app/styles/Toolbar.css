@@ -2,20 +2,22 @@
     --toolbar-bg-start: var(--background-start-rgb);
     --toolbar-bg-end: var(--background-end-rgb);
     --toolbar-text: rgb(var(--foreground-rgb));
+    --button-shadow-light: rgba(255, 255, 255, 0.8);
+    --button-shadow-dark: rgba(163,177,198, 0.6);
 }
 
 .toolbar-container {
     transition: box-shadow 0.3s ease-in-out;
-    box-shadow: 4px 4px 8px rgba(163,177,198,0.15), 
-                -4px -4px 8px rgba(255, 255, 255, 0.04);
+    box-shadow: 4px 4px 8px var(--button-shadow-dark), 
+                -4px -4px 8px var(--button-shadow-light);
     padding: 0.8rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Frosted Glass Effect */
     background: rgba(255, 255, 255, 0.1); 
     backdrop-filter: blur(5px); 
 }
+
 
 /* Tablet screen sizes */
 @media (min-width: 640px) {
@@ -33,16 +35,15 @@
     }
 }
 
+
+
 @media (prefers-color-scheme: dark) {
     :root {
         --toolbar-bg-start: var(--background-end-rgb);  /* switch them */
         --toolbar-bg-end: var(--background-start-rgb);  /* switch them */
         --toolbar-text: rgb(var(--foreground-rgb));
-    }
-
-    .toolbar-container {
-        box-shadow: 4px 4px 8px rgba(45, 45, 45, 0.15), 
-                    -4px -4px 8px rgba(28, 28, 28, 0.04);
+        --button-shadow-light: rgba(28, 28, 28, 0.6);
+        --button-shadow-dark: rgba(45, 45, 45, 0.8);
     }
 }
 
@@ -51,35 +52,17 @@
     color: var(--toolbar-text);
     border-radius: 10px;
     transition: all 0.2s ease-in-out;
+    /* Default state without neumorphism */
 }
 
 .toolbar-button:hover {
     background-color: var(--toolbar-bg-start);
-    box-shadow: 4px 4px 10px rgba(163,177,198,0.4), 
-                -4px -4px 10px rgba(255,255,255, 0.6);
+    box-shadow: 4px 4px 10px var(--button-shadow-dark), 
+                -4px -4px 10px var(--button-shadow-light);
 }
 
 /* Neumorphic pressed effect */
 .toolbar-button:active {
-    box-shadow: inset 4px 4px 10px rgba(163,177,198,0.4), 
-                inset -4px -4px 10px rgba(255,255,255, 0.6);
-}
-
-@media (prefers-color-scheme: dark) {
-    .toolbar-button {
-        background-color: var(--toolbar-bg-end);
-        box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.593);
-    }
-
-    .toolbar-button:hover {
-        background-color: var(--toolbar-bg-start);
-        box-shadow: 2px 2px 5px rgba(192, 151, 151, 0.883), 
-                    -2px -2px 5px rgba(255,255,255,0.5);
-    }
-
-    /* Neumorphic pressed effect in dark mode */
-    .toolbar-button:active {
-        box-shadow: inset 2px 2px 5px rgba(192, 151, 151, 0.883), 
-                    inset -2px -2px 5px rgba(255,255,255,0.5);
-    }
+    box-shadow: inset 4px 4px 10px var(--button-shadow-dark), 
+                inset -4px -4px 10px var(--button-shadow-light);
 }
