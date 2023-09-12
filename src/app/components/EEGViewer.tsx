@@ -159,7 +159,7 @@ const EEGViewer: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div className="eeg-scrolling-container" style={{ display: 'flex' }}>
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '800px', padding: '5px 0', marginRight: '5px' }}>
         {channelLabels.map(label => (
           <div key={label}>{label}</div>

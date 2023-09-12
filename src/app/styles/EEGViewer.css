@@ -88,6 +88,10 @@ text {
     fill: rgb(var(--channel-label-rgb)); /* Using the variable for channel label color */
 }
 
+.eeg-scrolling-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto; /* assuming horizontal scrolling */
+}
 
 
 
