@@ -54,8 +54,6 @@ body {
     /* Smartphone adjustments */
     flex-direction: column;
     align-items: center;
-    overflow-x: scroll;   /* Enable horizontal scrolling */
-    -webkit-overflow-scrolling: touch; 
 }
 
 /* Tablet screen sizes */

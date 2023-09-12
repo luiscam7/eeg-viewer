@@ -160,15 +160,14 @@ const EEGViewer: React.FC = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '800px', padding: '5px 0', marginRight: '5px' }}>
-            {channelLabels.map(label => (
-                <div key={label}>{label}</div>
-            ))}
-        </div>
-        <div className="scrolling-container" style={{ overflowX: 'scroll', '-webkit-overflow-scrolling': 'touch', width: '1050px', height: '800px' } as any}>
-            <svg ref={svgRef} width="1050" height="800"></svg>
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '800px', padding: '5px 0', marginRight: '5px' }}>
+        {channelLabels.map(label => (
+          <div key={label}>{label}</div>
+        ))}
+      </div>
+      <svg ref={svgRef} width="1050" height="800"></svg>
     </div>
-);}
+  );
+};
 
 export default EEGViewer;
