@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 const channels = 19;
@@ -9,8 +9,11 @@ const mockEEGData = Array.from({ length: channels }, () => ({
 }));
 
 const EEGViewer: React.FC = () => {
-
   const svgRef = useRef<SVGSVGElement>(null);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [eegStatus, setEegStatus] = useState('normal');
+
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
@@ -160,12 +163,41 @@ const EEGViewer: React.FC = () => {
 
   return (
     <div className="eeg-scrolling-container" style={{ display: 'flex' }}>
+      {/* EEG visualization */}
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '800px', padding: '5px 0', marginRight: '5px' }}>
         {channelLabels.map(label => (
           <div key={label}>{label}</div>
         ))}
       </div>
       <svg ref={svgRef} width="1050" height="800"></svg>
+
+      {/* Button to open modal */}
+      <button className="btn" onClick={() => setIsModalVisible(true)}>Open Modal</button>
+
+      {/* Modal */}
+      {isModalVisible && (
+        <dialog className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">EEG Status</h3>
+            <p className="py-4">Current Status: {eegStatus}</p>
+            <div className="modal-action">
+              <button className="btn" onClick={() => {
+                setEegStatus('normal');
+                setIsModalVisible(false);
+              }}>Mark as Normal</button>
+              <button className="btn" onClick={() => {
+                setEegStatus('abnormal');
+                setIsModalVisible(false);
+              }}>Mark as Abnormal</button>
+              <button className="btn" onClick={() => {
+                setEegStatus('seizure');
+                setIsModalVisible(false);
+              }}>Mark as Seizure</button>
+              <button className="btn" onClick={() => setIsModalVisible(false)}>Close</button>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 };
