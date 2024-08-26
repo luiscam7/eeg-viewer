@@ -1,35 +1,18 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
 const channels = 19;
 const channelLabels = ["Fz", "Cz", "Pz", "Fp1", "Fp2", "F7", "F3", "F4", "F8", "T7", "C3", "C4", "T8", "P7", "P3", "P4", "P8", "O1", "O2"];
+const mockEEGData = Array.from({ length: channels }, () => ({
+  values: Array.from({ length: 5000 }, () => Math.random() * 10 - 5),
+}));
 
 const EEGViewer: React.FC = () => {
+
   const svgRef = useRef<SVGSVGElement>(null);
-  const [eegData, setEegData] = useState<number[][]>([]);
 
   useEffect(() => {
-    // Fetch EEG data from the endpoint
-    const fetchEEGData = async () => {
-      try {
-        const response = await fetch('http://synth-data-1989392102.us-west-2.elb.amazonaws.com:8000/eeg');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setEegData(data);  // Assuming the endpoint returns an array of channel data
-      } catch (error) {
-        console.error('Error fetching EEG data:', error);
-      }
-    };
-
-    fetchEEGData();
-  }, []);
-
-  useEffect(() => {
-    if (eegData.length === 0) return; // Wait until the data is fetched
-
     const svg = d3.select(svgRef.current);
     const width = +svg.attr('width');
     const height = +svg.attr('height');
@@ -38,68 +21,82 @@ const EEGViewer: React.FC = () => {
 
     let lastTime = Date.now();
     let velocity = 100;
-    const friction = 0.001;
+    const friction = 0.001; 
     let isDecelerating = false;
-
+    
     svg.on('wheel', function(event) {
       const currentTime = Date.now();
       const elapsed = currentTime - lastTime;
       velocity = event.deltaX / elapsed;
-
+    
       const initialPan = event.deltaY;
       let remainingPan = velocity * 100;
-
+    
       const move = function(panAmount: number) {
+        // Get the current transformation
         const currentTransform = d3.zoomTransform(svg.node()!);
-        let proposedTranslationX = currentTransform.x + panAmount;
-
-        const minXTranslation = -width * 4;
-        const maxXTranslation = 0;
-
+        
+        // Calculate the proposed translation
+        let proposedTranslationX = currentTransform.x + panAmount;  // Add the panAmount
+        
+        // Define the boundary values
+        const minXTranslation = -width * 4;  // This is the maximum leftward pan
+        const maxXTranslation = 0;           // Initial position, you cannot pan rightward beyond this
+        
+        // Check and adjust for boundaries
         if (proposedTranslationX < minXTranslation) {
           proposedTranslationX = minXTranslation;
         } else if (proposedTranslationX > maxXTranslation) {
           proposedTranslationX = maxXTranslation;
         }
-
+      
         const newTransform = d3.zoomIdentity.translate(proposedTranslationX, currentTransform.y);
         svg.call(zoom.transform as any, newTransform);
       };
-
+      
+      
+    
       if (isDecelerating) {
+        // Adjust logic if you want a new scroll to affect current deceleration
+        // For example, you could add the new pan to the remainingPan
         remainingPan += initialPan;
       } else {
         move(initialPan);
       }
-
+    
       const decelerate = function() {
         if (Math.abs(remainingPan) < 0.1) {
           isDecelerating = false;
-          return;
+          return; 
         }
-
+    
         move(remainingPan);
         remainingPan *= friction;
-
+    
         requestAnimationFrame(decelerate);
       };
-
+    
       if (!isDecelerating) {
         isDecelerating = true;
         requestAnimationFrame(decelerate);
       }
-
+    
       lastTime = currentTime;
     });
 
+    function createZoomEvent(tx: number, ty: number) {
+      const currentTransform = d3.zoomTransform(svg.node()!);
+      return d3.zoomIdentity.translate(currentTransform.x + tx, currentTransform.y + ty);
+    }
+
     svg.on('mouseover', function() {
       svg.dispatch('start');
-      if (!svgRef.current) return;
+      if (!svgRef.current) return; 
 
       d3.select(window).on('keydown', function(event) {
         const currentTransform = d3.zoomTransform(svg.node()!);
         let proposedTranslationX;
-
+  
         if (event.key === 'ArrowRight') {
           proposedTranslationX = currentTransform.x - 330;
         } else if (event.key === 'ArrowLeft') {
@@ -107,16 +104,16 @@ const EEGViewer: React.FC = () => {
         } else {
           return;
         }
-
+  
         const minXTranslation = -width * 4;
         const maxXTranslation = 0;
-
+  
         if (proposedTranslationX < minXTranslation) {
           proposedTranslationX = minXTranslation;
         } else if (proposedTranslationX > maxXTranslation) {
           proposedTranslationX = maxXTranslation;
         }
-
+  
         const newTransform = d3.zoomIdentity.translate(proposedTranslationX, currentTransform.y);
         svg.transition().duration(250).call(zoom.transform as any, newTransform);
       });
@@ -140,14 +137,14 @@ const EEGViewer: React.FC = () => {
       container.attr('transform', `translate(${event.transform.x},0)`);
     }
 
-    eegData.forEach((channel, i) => {
+    mockEEGData.forEach((channel, i) => {
       const y = (channelHeight + margin.top) * i + margin.top;
-      const xScale = d3.scaleLinear().domain([0, channel.length]).range([margin.left, width * 5 - margin.right]);
+      const xScale = d3.scaleLinear().domain([0, 5000]).range([margin.left, width * 5 - margin.right]);
       const yScale = d3.scaleLinear().domain([-5, 5]).range([y + channelHeight, y]);
       const lineGenerator = d3.line<number>().x((d, index) => xScale(index)).y(d => yScale(d));
 
       container.append('path')
-        .datum(channel)
+        .datum(channel.values)
         .attr('fill', 'none')
         .attr('stroke', '#00FFFF')
         .attr('stroke-width', 1.5)
@@ -159,7 +156,7 @@ const EEGViewer: React.FC = () => {
       d3.select(window).on('keydown', null);
       svg.on('wheel', null);
     };
-  }, [eegData]); // Re-run effect when eegData changes
+  }, []);
 
   return (
     <div className="eeg-scrolling-container" style={{ display: 'flex' }}>
